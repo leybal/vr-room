@@ -6,6 +6,7 @@
     "node": "8.7.0"
   },
   "scripts": {
+    "install": "npm run bundle",
     "start": "node server/bin/www",
     "start-vr": "node -e \"console.log('open browser at http://localhost:8081/vr/\\n\\n');\" && node node_modules/react-native/local-cli/cli.js start",
     "bundle": "node node_modules/react-vr/scripts/bundle.js",
