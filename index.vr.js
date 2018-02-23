@@ -35,7 +35,7 @@ export default class VR extends React.Component {
     };
 
     //this.socket = io('http://localhost:3000');
-    this.socket = io();
+    this.socket = io('https://vr-room.herokuapp.com/');
   }
 
 
