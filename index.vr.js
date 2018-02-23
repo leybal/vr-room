@@ -21,7 +21,7 @@ export default class VR extends React.Component {
     this.mScale = 0.028;
     this.mTranslateScale = 1 / this.mScale;
     this.mRotateFix = 190;
-    this.interval = 500;
+    this.interval = 1000;
 
     this.state = {
       currentUser: {
