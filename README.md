@@ -1,5 +1,4 @@
-# vr room
+## VR room
 
 	npm install
-	npm run bundle
-	npm run server
+	npm run start

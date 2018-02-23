@@ -1,15 +1,14 @@
 import React from 'react';
 import {
   AppRegistry,
-  asset,
   Pano,
   View,
   AmbientLight,
   Scene,
   Model,
-  VrHeadModel
+  VrHeadModel,
+  Animated
 } from 'react-vr';
-
 
 import io from 'socket.io-client';
 
@@ -29,23 +28,25 @@ export default class VR extends React.Component {
         id: '',
         scene: 'default',
         translate: [0, 0, 0],
-        rotate: [0, 0, 0]
+        rotate: [0, 0, 0],
       },
-      users: []
+      users: [],
+      yRotation: new Animated.Value(0)
     };
 
-    this.socket = io('http://localhost:3000');
+    //this.socket = io('http://localhost:3000');
+    this.socket = io();
   }
 
 
-  componentWillMount() {
+   componentWillMount() {
     this.socket.on('user connected', (data) => {
       if (this.state.currentUser.id) {
         this.setState({
           users: data.users
         });
       } else {
-        this.setState({...data});
+        this.setState({ ...this.state, ...data});
       }
     });
 
@@ -56,6 +57,7 @@ export default class VR extends React.Component {
 
 
   componentDidMount() {
+    // VrHeadModel rotation listener
     this.intervalId = setInterval(() => {
       let rotation = [0, 0, 0];
       if (this.state.currentUser.id) rotation = VrHeadModel.rotation();
@@ -73,6 +75,7 @@ export default class VR extends React.Component {
       }
 
       this.setState({
+        ...this.state,
         currentUser: currentUserNew,
         users: usersNew
       }, () => {
@@ -83,9 +86,17 @@ export default class VR extends React.Component {
 
     this.socket.on('user rotated callback', (users) => {
       this.setState({
+        ...this.state,
         users: users
       });
     });
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    // Animated.timing(nextState.yRotation, {
+    //   duration: this.interval,
+    //   toValue: nextState.users[0].rotate[1] + this.mRotateFix,
+    // }).start();
   }
 
 
@@ -113,9 +124,9 @@ export default class VR extends React.Component {
         />
 
         {scene === 'default' ? (
-          <Pano source={{uri: '/scenes/battleship_bay.png'}}/>
+          <Pano source={{uri: '/static_assets/scenes/battleship_bay.png'}}/>
         ) : (
-          <Pano source={{uri: '/scenes/chess-world.jpg'}}/>
+          <Pano source={{uri: '/static_assets/scenes/chess-world.jpg'}}/>
         )}
 
         {this.state.users.map(user => {
@@ -129,8 +140,8 @@ export default class VR extends React.Component {
             <Model
               key={user.id}
               source={{
-                obj: '/models/sonic/sonic-the-hedgehog.obj',
-                mtl: '/models/sonic/sonic-the-hedgehog.mtl'
+                obj: '/static_assets/models/sonic/sonic-the-hedgehog.obj',
+                mtl: '/static_assets/models/sonic/sonic-the-hedgehog.mtl'
               }}
               style={{
                 transform: [
@@ -139,6 +150,7 @@ export default class VR extends React.Component {
                   {rotateY: mRotateY},
                 ]
               }}
+              lit
               wireframe={false}
             />
           );

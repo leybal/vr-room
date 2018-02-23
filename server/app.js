@@ -8,12 +8,13 @@ const app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, '/../static_assets')));
+
+app.use(express.static(path.join(__dirname, '/../vr')));
 
 
 // We have only one rout, one get request
 app.get('/', function(req, res, next) {
-    res.sendFile(path.join(__dirname, '/../vr/static.html'));
+  res.sendFile('static.html');
 });
 
 
