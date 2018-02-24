@@ -9,6 +9,7 @@ function init(bundle, parent, options) {
   const vr = new VRInstance(bundle, 'VR', parent, {
     // Add custom options here
     ...options,
+    enableHotReload: true
   });
   vr.render = function() {
     // Any custom behavior you want to perform on each frame goes here
@@ -19,3 +20,7 @@ function init(bundle, parent, options) {
 }
 
 window.ReactVR = {init};
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById('loader').style.display = 'none';
+});

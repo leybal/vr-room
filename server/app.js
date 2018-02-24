@@ -11,10 +11,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, '/../vr')));
 
+console.log(__dirname);
 
 // We have only one rout, one get request
 app.get('/', function(req, res, next) {
-  res.sendFile('static.html');
+    if (process.env.NODE_ENV !== 'production') {
+        res.sendFile('static.html');
+    } else {
+        res.sendFile('index.html');
+    }
 });
 
 

@@ -20,8 +20,8 @@ export default class VR extends React.Component {
     this.sTransleteY = 1;
     this.mScale = 0.028;
     this.mTranslateScale = 1 / this.mScale;
-    this.mRotateFix = 190;
-    this.interval = 1000;
+    this.mRotateFix = 200;
+    this.interval = 100;
 
     this.state = {
       currentUser: {
@@ -34,19 +34,18 @@ export default class VR extends React.Component {
       yRotation: new Animated.Value(0)
     };
 
-    //this.socket = io('http://localhost:3000');
-    this.socket = io('https://vr-room.herokuapp.com');
+    this.socket = io('http://localhost:3000');
+    //this.socket = io('https://vr-room.herokuapp.com');
+
   }
 
 
    componentWillMount() {
     this.socket.on('user connected', (data) => {
       if (this.state.currentUser.id) {
-        this.setState({
-          users: data.users
-        });
+        this.setState({ ...this.state, users: data.users });
       } else {
-        this.setState({ ...this.state, ...data});
+        this.setState({ ...this.state, ...data });
       }
     });
 
@@ -56,39 +55,48 @@ export default class VR extends React.Component {
   }
 
 
-  componentDidMount() {
-    // VrHeadModel rotation listener
-    this.intervalId = setInterval(() => {
-      let rotation = [0, 0, 0];
-      if (this.state.currentUser.id) rotation = VrHeadModel.rotation();
+  eventHeadRotation = () => {
+    let that = this;
+    setTimeout(function tick() {
+      if (that.state.currentUser.id) {
+        let rotation = VrHeadModel.rotation();
 
-      let currentUserNew = {...this.state.currentUser};
-      currentUserNew.rotate = [...rotation];
+        // if user's Y coordinate has been changed
+        if ( rotation[1] !== that.state.currentUser.rotate[1] ) {
+          let currentUserNew = {...that.state.currentUser};
+          currentUserNew.rotate = [...rotation];
 
-      let usersNew = [...this.state.users];
+          let usersNew = [...that.state.users];
 
-      for (let i = 0; i < usersNew.length; i++) {
-        if (usersNew[i].id === currentUserNew.id) {
-          usersNew[i].rotate = [...rotation];
-          break;
+          for (let i = 0; i < usersNew.length; i++) {
+            if (usersNew[i].id === currentUserNew.id) {
+              usersNew[i].rotate = [...rotation];
+              break;
+            }
+          }
+
+          that.setState({
+            ...that.state,
+            currentUser: currentUserNew,
+            users: usersNew
+          }, () => {
+            let data = {id: that.state.currentUser.id, rotate: rotation};
+            that.socket.emit('user rotated', data);
+          });
         }
       }
 
-      this.setState({
-        ...this.state,
-        currentUser: currentUserNew,
-        users: usersNew
-      }, () => {
-        let data = {id: this.state.currentUser.id, rotate: rotation};
-        this.socket.emit('user rotated', data);
-      });
-    }, this.interval);
+      that.timerId = setTimeout(tick, that.interval);
+    }, that.interval);
+  };
+
+
+  componentDidMount() {
+    // VrHeadModel rotation listener
+    this.eventHeadRotation();
 
     this.socket.on('user rotated callback', (users) => {
-      this.setState({
-        ...this.state,
-        users: users
-      });
+      this.setState({ ...this.state, users: users });
     });
   }
 
@@ -101,7 +109,8 @@ export default class VR extends React.Component {
 
 
   componentWillUnmount() {
-    clearInterval(this.intervalId);
+    clearTimeout(this.timerId);
+    this.socket.removeAllListeners();
   }
 
 
@@ -115,18 +124,20 @@ export default class VR extends React.Component {
       ]
     };
 
+
+    console.log('RENDER');
+
     return (
       <View>
         <Scene style={sceneStyle}/>
-
         <AmbientLight intensity={1}
           style={{color: '#fff'}}
         />
 
         {scene === 'default' ? (
-          <Pano source={{uri: '/static_assets/scenes/battleship_bay.png'}}/>
+          <Pano source={{uri: '/static_assets/scenes/commercial_area_cam_v004.jpg'}}/>
         ) : (
-          <Pano source={{uri: '/static_assets/scenes/chess-world.jpg'}}/>
+          <Pano source={{uri: `/static_assets/scenes/${scene}`}}/>
         )}
 
         {this.state.users.map(user => {

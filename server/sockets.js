@@ -32,9 +32,8 @@ sockets.init = function (server) {
 
 
     let userConnected = (socket) => {
-        let translate = {},
-            currentUser = {},
-            data = {};
+        let translate = {};
+
 
         if (locations.length) {
             let vacancy = false,
@@ -64,9 +63,7 @@ sockets.init = function (server) {
             locations.push({id: socket.client.id, busy: true});
         }
 
-        console.log('locations', currentUser);
-
-        currentUser = {
+        let currentUser = {
             id: socket.client.id,
             scene: 'default',
             translate: translate,
@@ -75,13 +72,13 @@ sockets.init = function (server) {
 
         users.push(currentUser);
 
-        data = {
+        let stateData = {
             currentUser: currentUser,
             users: users
         };
 
-        // we're sending data if new user connected
-        io.emit('user connected', data);
+        // sending data if new user connected
+        io.emit('user connected', stateData);
     };
 
 
@@ -89,15 +86,9 @@ sockets.init = function (server) {
         userConnected(socket);
 
         socket.on('user rotated', function (data) {
-            let rotate = [0, 0, 0];
             let user = users.find(user => user.id === data.id);
-            try {
-                if (data.rotate.length) rotate = [...data.rotate];
-            } catch(e) {
-                console.log(e);
-            }
-            user.rotate = rotate || [0, 0, 0];
 
+            user.rotate = data.rotate;
             socket.broadcast.emit('user rotated callback', users);
         });
 
@@ -126,8 +117,6 @@ sockets.init = function (server) {
             }
 
             socket.broadcast.emit('user disconnected', users);
-
-            console.log('locations', locations);
         });
     });
 };
