@@ -11,17 +11,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, '/../vr')));
 
-console.log(__dirname);
-
 // We have only one rout, one get request
-app.get('/', function(req, res, next) {
-    if (process.env.NODE_ENV === 'production') {
-        res.sendFile('static.html');
+app.use('/', function(req, res, next) {
+    if (req.app.get('env') === 'production') {
+        res.sendFile(path.join(__dirname, '/../vr/static.html'));
     } else {
-        res.sendFile('index.html');
+        res.sendFile(path.join(__dirname, '/../vr/_index.html'));
     }
 });
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
