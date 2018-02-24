@@ -15,7 +15,7 @@ console.log(__dirname);
 
 // We have only one rout, one get request
 app.get('/', function(req, res, next) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'production') {
         res.sendFile('static.html');
     } else {
         res.sendFile('index.html');
