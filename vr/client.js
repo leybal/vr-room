@@ -19,7 +19,3 @@ function init(bundle, parent, options) {
 }
 
 window.ReactVR = {init};
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById('loader').style.display = 'none';
-});

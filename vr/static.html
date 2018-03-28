@@ -3,63 +3,97 @@
     <title>VR room</title>
     <style>
         body { margin: 0; }
+        #form-wrap {
+          padding-top: 10px;
+        }
+        #form-wrap h2 {
+          text-align: center;
+        }
+        #user {
+          display: flex;
+          margin: 20px auto;
+          justify-content: center;
+        }
+        #user * {
+          font-size: 14px;
+        }
+        #user-name {
+          padding: 3px 5px;
+        }
+        #submit-name {
+          margin-left: 10px;
+        }
         #loader {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            z-index: 1;
-            width: 150px;
-            height: 150px;
-            margin: -75px 0 0 -75px;
-            border: 16px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 16px solid #3498db;
-            width: 120px;
-            height: 120px;
-            -webkit-animation: spin 2s linear infinite;
-            animation: spin 2s linear infinite;
+          display: none;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          z-index: 1;
+          width: 150px;
+          height: 150px;
+          margin: -75px 0 0 -75px;
+          border: 16px solid #f3f3f3;
+          border-radius: 50%;
+          border-top: 16px solid #3498db;
+          width: 120px;
+          height: 120px;
+          -webkit-animation: spin 2s linear infinite;
+          animation: spin 2s linear infinite;
         }
         @-webkit-keyframes spin {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
+          0% { -webkit-transform: rotate(0deg); }
+          100% { -webkit-transform: rotate(360deg); }
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .animate-bottom {
-            position: relative;
-            -webkit-animation-name: animatebottom;
-            -webkit-animation-duration: 1s;
-            animation-name: animatebottom;
-            animation-duration: 1s
-        }
-        @-webkit-keyframes animatebottom {
-            from { bottom:-100px; opacity:0 }
-            to { bottom:0px; opacity:1 }
-        }
-        @keyframes animatebottom {
-            from{ bottom:-100px; opacity:0 }
-            to{ bottom:0; opacity:1 }
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
     </style>
 
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 </head>
 <body>
+<div id="form-wrap">
+    <h2>Welcome to VR room</h2>
+    <div id="user">
+        <input type="text" id="user-name" name="userName" maxlength="15" minlength="3"
+               placeholder="Enter your name">
+        <button id="submit-name" disabled>Submit</button>
+    </div>
+</div>
 <div id="loader"></div>
 
 <!-- When you're ready to deploy your app, update this line to point to your compiled client.bundle.js -->
 <script src="/build/client.bundle.js"></script>
 <script>
-  // Initialize the React VR application
-  ReactVR.init(
-    // When you're ready to deploy your app, update this line to point to
-    // your compiled index.bundle.js
-    '/build/index.bundle.js',
-    // Attach it to the body tag
-    document.body
-  );
+  document.addEventListener("keyup", () => {
+    let userName = document.getElementById("user-name").value;
+    if (userName.length > 2 && userName.length < 16) {
+      document.getElementById("submit-name").disabled = false;
+      window.userName = userName;
+    } else {
+      document.getElementById("submit-name").disabled = true;
+    }
+  }, false);
+
+  document.getElementById("submit-name").addEventListener("click", () => {
+    document.getElementById("form-wrap").style.display = "none";
+    document.removeEventListener("keyup", () => {}, false);
+
+    // Initialize the React VR application
+    ReactVR.init(
+      // When you're ready to deploy your app, update this line to point to
+      // your compiled index.bundle.js
+      '/build/index.bundle.js',
+      // Attach it to the body tag
+      document.body,
+      {
+        initialProps: {
+          userName: window.userName,
+        }
+      }
+    );
+  });
 </script>
 </body>
 </html>

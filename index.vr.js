@@ -7,10 +7,21 @@ import {
   Scene,
   Model,
   VrHeadModel,
-  Animated
+  Text
 } from 'react-vr';
 
 import io from 'socket.io-client';
+
+
+const textStyle = {
+  fontSize: 0.1,
+  paddingTop: 0,
+  paddingBottom: 0,
+  paddingLeft: 0.02,
+  paddingRight: 0.02,
+  textAlign: 'center',
+  textAlignVertical: 'center',
+};
 
 
 export default class VR extends React.Component {
@@ -21,32 +32,40 @@ export default class VR extends React.Component {
     this.mScale = 0.028;
     this.mTranslateScale = 1 / this.mScale;
     this.mRotateFix = 200;
-    this.interval = 100;
+    this.interval = 300;
 
     this.state = {
       currentUser: {
         id: '',
+        name: this.props.userName || 'Name',
         scene: 'default',
         translate: [0, 0, 0],
         rotate: [0, 0, 0],
       },
-      users: [],
-      yRotation: new Animated.Value(0)
+      users: []
     };
 
-    //this.socket = io('http://localhost:3000');
-    this.socket = io('https://vr-room.herokuapp.com');
-
+    this.socket = io('http://localhost:3000');
+    // this.socket = io('https://vr-room.herokuapp.com');
   }
 
 
-   componentWillMount() {
+  componentWillMount() {
     this.socket.on('user connected', (data) => {
       if (this.state.currentUser.id) {
         this.setState({ ...this.state, users: data.users });
       } else {
-        this.setState({ ...this.state, ...data });
+        data.currentUser.name = this.props.userName;
+        this.setState({
+          ...this.state, ...data
+        }, () => {
+          this.socket.emit('pass user name', this.state.currentUser, this.props.userName);
+        });
       }
+    });
+
+    this.socket.on('pass user name callback', (users) => {
+      this.setState({ ...this.state, users: users });
     });
 
     this.socket.on('user disconnected', (users) => {
@@ -100,13 +119,6 @@ export default class VR extends React.Component {
     });
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    // Animated.timing(nextState.yRotation, {
-    //   duration: this.interval,
-    //   toValue: nextState.users[0].rotate[1] + this.mRotateFix,
-    // }).start();
-  }
-
 
   componentWillUnmount() {
     clearTimeout(this.timerId);
@@ -124,14 +136,13 @@ export default class VR extends React.Component {
       ]
     };
 
-
     console.log('RENDER');
 
     return (
       <View>
         <Scene style={sceneStyle}/>
         <AmbientLight intensity={1}
-          style={{color: '#fff'}}
+                      style={{color: '#fff'}}
         />
 
         {scene === 'default' ? (
@@ -148,22 +159,41 @@ export default class VR extends React.Component {
           ];
           let mRotateY = user.rotate[1] + this.mRotateFix;
           return (
-            <Model
-              key={user.id}
-              source={{
-                obj: '/static_assets/models/sonic/sonic-the-hedgehog.obj',
-                mtl: '/static_assets/models/sonic/sonic-the-hedgehog.mtl'
-              }}
-              style={{
-                transform: [
-                  {scale: this.mScale},
-                  {translate: [mTranslate[0], mTranslate[1], mTranslate[2]]},
-                  {rotateY: mRotateY},
-                ]
-              }}
-              lit
-              wireframe={false}
-            />
+            <View key={user.id}>
+              {user.id !== this.state.currentUser.id &&
+                <View style={{
+                  borderRadius: 0.02,
+                  borderWidth: 0.005,
+                  borderColor: '#479044',
+                  layoutOrigin: [0.5, 0.5],
+                  transform: [
+                    {translate: [user.translate[0], 0.95, user.translate[2]]},
+                    {rotateY: user.rotate[1] + 180}
+                  ],
+                }}>
+                  <Text
+                    style={textStyle}>
+                    {user.name}
+                  </Text>
+                </View>
+              }
+
+              <Model
+                source={{
+                  obj: '/static_assets/models/sonic/sonic-the-hedgehog.obj',
+                  mtl: '/static_assets/models/sonic/sonic-the-hedgehog.mtl'
+                }}
+                style={{
+                  transform: [
+                    {scale: this.mScale},
+                    {translate: [mTranslate[0], mTranslate[1], mTranslate[2]]},
+                    {rotateY: mRotateY},
+                  ]
+                }}
+                lit
+                wireframe={false}
+              />
+            </View>
           );
         })}
       </View>

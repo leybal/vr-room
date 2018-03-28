@@ -34,7 +34,6 @@ sockets.init = function (server) {
     let userConnected = (socket) => {
         let translate = {};
 
-
         if (locations.length) {
             let vacancy = false,
                 vacancyIndex = -1;
@@ -65,6 +64,7 @@ sockets.init = function (server) {
 
         let currentUser = {
             id: socket.client.id,
+            name: 'Name',
             scene: 'default',
             translate: translate,
             rotate: [0, 0, 0]
@@ -84,6 +84,14 @@ sockets.init = function (server) {
 
     io.on('connection', function (socket) {
         userConnected(socket);
+
+        socket.on('pass user name', function (currentUser, userName) {
+          let user = users.find(user => user.id === currentUser.id);
+
+          user.name = userName;
+          socket.broadcast.emit('pass user name callback', users);
+        });
+
 
         socket.on('user rotated', function (data) {
             let user = users.find(user => user.id === data.id);
