@@ -237,7 +237,6 @@ export default class VR extends React.Component {
 
     if (idx > -1) {
       idx++;
-      console.log(this.panoramas.length - 1);
       if (idx > this.panoramas.length - 1) {
         idx = 0;
       }
