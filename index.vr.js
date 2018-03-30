@@ -264,11 +264,12 @@ export default class VR extends React.Component {
         <Scene style={sceneStyle}/>
         <AmbientLight intensity={1} style={{color: '#fff'}}/>
 
-        {scene === 'default' ? (
+        <Pano source={{uri: '/static_assets/scenes/commercial_area.jpg'}}/>
+        {/*{scene === 'default' ? (
           <Pano source={{uri: '/static_assets/scenes/commercial_area.jpg'}}/>
         ) : (
           <Pano source={{uri: `/static_assets/scenes/${scene}`}}/>
-        )}
+        )}*/}
 
         <VrButton
           onClick={(e) => this.onPanoClick(e)}
