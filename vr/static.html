@@ -79,21 +79,21 @@
   document.getElementById("submit-name").addEventListener("click", () => {
     document.getElementById("form-wrap").style.display = "none";
     document.removeEventListener("keyup", () => {}, false);
-
-    // Initialize the React VR application
-    ReactVR.init(
-      // When you're ready to deploy your app, update this line to point to
-      // your compiled index.bundle.js
-      '/build/index.bundle.js',
-      // Attach it to the body tag
-      document.body,
-      {
-        initialProps: {
-          userName: window.userName,
-        }
-      }
-    );
   });
+
+  // Initialize the React VR application
+  ReactVR.init(
+    // When you're ready to deploy your app, update this line to point to
+    // your compiled index.bundle.js
+    '/build/index.bundle.js',
+    // Attach it to the body tag
+    document.body,
+    {
+      initialProps: {
+        userName: window.userName,
+      }
+    }
+  );
 </script>
 </body>
 </html>
