@@ -318,8 +318,8 @@ export default class VR extends React.Component {
 
               <Model
                 source={{
-                  obj: `${FILES_UTL}//models/sonic/sonic-the-hedgehog.obj`,
-                  mtl: `${FILES_UTL}//models/sonic/sonic-the-hedgehog.mtl`
+                  obj: `${FILES_UTL}/models/sonic/sonic-the-hedgehog.obj`,
+                  mtl: `${FILES_UTL}/models/sonic/sonic-the-hedgehog.mtl`
                 }}
                 style={{
                   transform: [
