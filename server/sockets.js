@@ -101,6 +101,14 @@ sockets.init = function (server) {
         });
 
 
+        socket.on('user moved', function (data) {
+            let user = users.find(user => user.id === data.id);
+
+            user.translate = data.translate;
+            socket.broadcast.emit('user moved callback', users);
+        });
+
+
         socket.on('disconnect', function () {
             let BreakException = {};
 
