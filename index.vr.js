@@ -19,6 +19,7 @@ const DEFAULT_ANIMATION_BUTTON_SIZE = 0.05;
 const DEFAULT_LOCATIONS = [[0,0,-1], [-1,0,0], [0,0,1], [1,0,0]];
 const STEP = 1;
 const MAX_AREA = 10;
+const FILES_UTL = 'https://s3.eu-central-1.amazonaws.com/vr-room-files';
 
 const textStyle = {
   fontSize: 0.1,
@@ -265,9 +266,9 @@ export default class VR extends React.Component {
         <AmbientLight intensity={1} style={{color: '#fff'}}/>
 
         {scene === 'default' ? (
-          <Pano source={{uri: '/static_assets/scenes/commercial_area.jpg'}}/>
+          <Pano source={{uri: `${FILES_UTL}/scenes/commercial_area.jpg`}}/>
         ) : (
-          <Pano source={{uri: `/static_assets/scenes/${scene}`}}/>
+          <Pano source={{uri: `${FILES_UTL}/scenes/${scene}`}}/>
         )}
 
         <VrButton
@@ -317,8 +318,8 @@ export default class VR extends React.Component {
 
               <Model
                 source={{
-                  obj: '/static_assets/models/sonic/sonic-the-hedgehog.obj',
-                  mtl: '/static_assets/models/sonic/sonic-the-hedgehog.mtl'
+                  obj: `${FILES_UTL}//models/sonic/sonic-the-hedgehog.obj`,
+                  mtl: `${FILES_UTL}//models/sonic/sonic-the-hedgehog.mtl`
                 }}
                 style={{
                   transform: [
